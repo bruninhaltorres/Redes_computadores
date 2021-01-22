@@ -2,7 +2,7 @@
 # ^ vai permitir que utilizemos acentos
 
 import socket, threading, select
-# Socket: modul principal
+# Socket: modulo principal
 # Threading: vai atender os clientes
 # Select: entrada e saida de dados
 
@@ -13,20 +13,42 @@ PORT = 8088
 def conecta(cliente, endereco):
     print('Cliente {} recebido!'.format(endereco))
     servidor = socket.socket()
+    servidor.connect( (' ', 8080) ) # Conectar o servidor a um IP e Porta remota:
+    
+    cliente.recv(8192)
+    servidor.send()
 
-    # Conectar o servidor a um IP e Porta remota:
-    servidor.connect( (' ') )
+    try:
+        while True:
+            # Entrada e saida de dados:
+            leitura, escrita, erro = select.select([servidor, cliente], [], [servidor, cliente], 3)
+            if erro:
+                raise # Vai para o except.
+            for i in leitura:
+                dados = i.recv(8192)
+                if not dados: raise
+                if i is servidor:
+                    #Download
+                    cliente.send(dados)
+                else:
+                    #Upload
+                    servidor.send(dados)
+    except:
+        print('Cliente desconectado!')
+
+
+
 
 # Listen: É a porta onde bit vaice http injector o cliente se conecta pelo ip porta
 listen = socket.socket()
-listen.bind( (HOST, PORT) )
+listen.bind( ('localhost', 8080) )
 # .bind: amarra o ip e a porta. Envia uma tupla contendo uma string(host local) e um inteiro(porta local)
 # Objeto criado!
 
 # Colocar em modo de escuta:
 listen.listen(0)
 
-print('Esperando o Cliente no IP e Porta: 127.0.0.1:8088')
+print('Esperando o Cliente no IP e Porta: 127.0.0.1:8080')
 
 # Fique em laço de repetição e aceitar todos os clientes que queiram se conectar
 
@@ -44,4 +66,3 @@ while True:
 
 
     print('Teste')
-# parei em 30 minutos da maior video aula.
