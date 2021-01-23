@@ -5,43 +5,40 @@ import socket, threading
 # Socket: modulo principal
 # Threading: vai atender os clientes
 
-PORT = 8080
+PORT = 60000
 
-def conecta(cliente, endereco):
-    print('Cliente {} recebido!'.format(endereco))
+class client_thread(threading.Thread):
+    def __init__(self, endereco, cliente):
+        threading.Thread.__init__(self)
+        self.csocket = cliente # Recebe o socket cliente
+        print("Endereço da nova conexão: ", endereco)
+ 
+    def run(self):
+        print("Conexão de: ", endereco)
+        # self.csocket.send(bytes("Hi, This is from Server..",'utf-8'))
+        mensagem = ''
+        while True:
+            data = self.csocket.recv(2048)
+            mensagem = data.decode()
+            if mensagem == 'sair':
+                break
+            print("Mensagem do cliente: ", mensagem)
+            self.csocket.send(bytes(mensagem, 'UTF-8'))
+        print("Client at ", endereco, " disconnected...")
 
-    servidor = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    servidor.connect(('localhost', PORT)) # Conectar o servidor a um IP e Porta remota:
-    
-    while True:
-        cliente.recv(1024)
-        cliente = cliente.rstrip()
-        if (cliente != "sair"):
-            print("Mensagem do cliente:", cliente)
-        else:
-            servidor.close()
-        break
-    print('Cliente desconectado!')
-
-listen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-listen.bind(('localhost', PORT))
+servidor = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # Bind: amarra o ip e a porta. Envia uma tupla contendo uma string(host local) e um inteiro(porta local)
+servidor.bind(('localhost', PORT))
 # Objeto criado!
-
-# Listen: Deixa o servidor no modo ouvinte esperando a conexão:
-listen.listen(0)
-
-print('Esperando o Cliente no IP e Porta: 127.0.0.1: ', PORT)
 
 # Fique em laço de repetição e aceite todos os clientes que queiram se conectar
 while True:
+    # Listen: Deixa o servidor no modo ouvinte esperando a conexão:
+    servidor.listen(1)
+
     # Accept: Aceita a conexão
-    cliente, endereco = listen.accept()
-    print('Conectado em', endereco)
+    cliente, endereco = servidor.accept()
 
     # Modo de tarefa paralela, pois enquanto aceito novos clientes outra tarefa esta atendendo os clientes já aceitos:
-    threading.Thread( target = conecta, args = (cliente, endereco) ).start()
-
-    # Target: parametro da função Thread.
-    # Não pode fazer conecta(), pois não estamos chamando, só passando seus argumentos.
-    print('Teste')
+    newthread = client_thread(endereco, cliente)
+    newthread.start()

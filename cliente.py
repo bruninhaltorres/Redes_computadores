@@ -2,7 +2,7 @@
 
 import socket
 
-PORT = 8080
+PORT = 60000
 
 cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -10,8 +10,11 @@ cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 cliente.connect( ('127.0.0.1', PORT) )
 
 while True:
-    text = input("Informe o texto ou digite 'sair' para desconectar: ")
-    cliente.send(str.encode(text))
-    if (text == "sair"):
-        cliente.close()
+    # in_data = client.recv(1024)
+    # print("From Server :", in_data.decode())
+    mensagem = input("Informe o texto ou digite 'sair' para desconectar: ")
+    cliente.sendall(bytes(mensagem, 'UTF-8'))
+    if mensagem == 'sair':
         break
+
+cliente.close()
