@@ -1,68 +1,47 @@
 # coding: utf-8
 # ^ vai permitir que utilizemos acentos
 
-import socket, threading, select
+import socket, threading
 # Socket: modulo principal
 # Threading: vai atender os clientes
-# Select: entrada e saida de dados
 
-HOST = 'localhost' # Poderia ser também o numero '127.0.0.1'
-PORT = 8088
+PORT = 8080
 
-# Função responsavel por 
 def conecta(cliente, endereco):
     print('Cliente {} recebido!'.format(endereco))
-    servidor = socket.socket()
-    servidor.connect( (' ', 8080) ) # Conectar o servidor a um IP e Porta remota:
+
+    servidor = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    servidor.connect(('localhost', PORT)) # Conectar o servidor a um IP e Porta remota:
     
-    cliente.recv(8192)
-    servidor.send()
+    while True:
+        cliente.recv(1024)
+        cliente = cliente.rstrip()
+        if (cliente != "sair"):
+            print("Mensagem do cliente:", cliente)
+        else:
+            servidor.close()
+        break
+    print('Cliente desconectado!')
 
-    try:
-        while True:
-            # Entrada e saida de dados:
-            leitura, escrita, erro = select.select([servidor, cliente], [], [servidor, cliente], 3)
-            if erro:
-                raise # Vai para o except.
-            for i in leitura:
-                dados = i.recv(8192)
-                if not dados: raise
-                if i is servidor:
-                    #Download
-                    cliente.send(dados)
-                else:
-                    #Upload
-                    servidor.send(dados)
-    except:
-        print('Cliente desconectado!')
-
-
-
-
-# Listen: É a porta onde bit vaice http injector o cliente se conecta pelo ip porta
-listen = socket.socket()
-listen.bind( ('localhost', 8080) )
-# .bind: amarra o ip e a porta. Envia uma tupla contendo uma string(host local) e um inteiro(porta local)
+listen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+listen.bind(('localhost', PORT))
+# Bind: amarra o ip e a porta. Envia uma tupla contendo uma string(host local) e um inteiro(porta local)
 # Objeto criado!
 
-# Colocar em modo de escuta:
+# Listen: Deixa o servidor no modo ouvinte esperando a conexão:
 listen.listen(0)
 
-print('Esperando o Cliente no IP e Porta: 127.0.0.1:8080')
+print('Esperando o Cliente no IP e Porta: 127.0.0.1: ', PORT)
 
-# Fique em laço de repetição e aceitar todos os clientes que queiram se conectar
-
+# Fique em laço de repetição e aceite todos os clientes que queiram se conectar
 while True:
-
-    # accept: retorna uma tupla contendo dois valores. Um objeto socket do cliente e uma segunda tupla contendo o IP e a Porta do cliente.
+    # Accept: Aceita a conexão
     cliente, endereco = listen.accept()
     print('Conectado em', endereco)
 
-    # Modo de tarefa paralela, pois enquanto recebo clientes outra tarefa esta atendendo clientes:
-    threading.Thread( target = conect, args = (cliente, endereco) ).start()
-    # target: parametro da função Thread.
-    # não pode fazer conecta(), pois não estamos chamando, só passando seus argumentos.
+    # Modo de tarefa paralela, pois enquanto aceito novos clientes outra tarefa esta atendendo os clientes já aceitos:
+    threading.Thread( target = conecta, args = (cliente, endereco) ).start()
 
-
-
+    # Target: parametro da função Thread.
+    # Não pode fazer conecta(), pois não estamos chamando, só passando seus argumentos.
     print('Teste')

@@ -2,14 +2,16 @@
 
 import socket
 
-cliente = socket.socket()
+PORT = 8080
+
+cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
 #Pedir a conexão:
-cliente.connect( ('127.0.0.1', 50000) )
-#Enviar dados:
-cliente.sendall(str.encode('Bom dia'))
-#                   ^ pra garantir que a mensagem vai chegar em string
-dados = cliente.recv(8192)
+cliente.connect( ('127.0.0.1', PORT) )
 
-print('Mensagem ecoada:', dados.decode())
-
-
+while True:
+    text = input("Informe o texto ou digite 'sair' para desconectar: ")
+    cliente.send(str.encode(text))
+    if (text == "sair"):
+        cliente.close()
+        break

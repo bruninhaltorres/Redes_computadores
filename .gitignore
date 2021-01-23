@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+Exemplo
+servidor.py
+
 # C extensions
 *.so
 
