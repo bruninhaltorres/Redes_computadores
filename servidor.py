@@ -14,8 +14,6 @@ class client_thread(threading.Thread):
 
     def run(self):
         print(f"Conexão {endereco} inicializada!")
-        # self.csocket.send(bytes("Hi, This is from Server..",'utf-8'))
-        
 
         ativo = 's'
 
@@ -139,8 +137,3 @@ while True:
     # Modo de tarefa paralela, pois enquanto aceito novos clientes outra tarefa esta atendendo os clientes já aceitos:
     newthread = client_thread(endereco, cliente)
     newthread.start()
-
-
-
-
-
