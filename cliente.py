@@ -10,8 +10,6 @@ cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 cliente.connect( ('127.0.0.1', PORT) )
 
 while True:
-    # in_data = client.recv(1024)
-    # print("From Server :", in_data.decode())
     print("Olá, seja bem-vindx. Vou te explicar como funciona o jogo... \nSua missão é derrotar um monstro e essas são suas opções: \nA - Ataque\nAE - Ataque Especial\nC - Cura\nD - Desistir\n? - Caso tenha dúvidas sobre os comandos.\n")
 
     life_jogador = 100
@@ -25,14 +23,6 @@ while True:
 
     while nivel != '1' and nivel != '2' and nivel != '3':
         nivel = input("Valor inválido. Tente novamente:\n1 - Fácil\n2 - Médio\n3 - Difícil\n")
-
-    # cliente.sendall(bytes(nivel, 'UTF-8'))
-
-    # cliente.sendall(bytes(ataque_especial, 'UTF-8'))
-    # ataque_especial = int(ataque_especial)
-
-    # cliente.sendall(bytes(cura, 'UTF-8'))
-    # cura = int(cura)
 
     print("Okay, vamos começar...\n")
 
@@ -102,7 +92,6 @@ while True:
                 print("Vida curada:", life_jogador + adicionar + forca_cura)
                 print("...foi atacado")
             print(f"\nVocê: {life_jogador} X {life_monstro} : Monstro\n")
-        # cliente.sendall(bytes(ativo, 'UTF-8')) # não ta enviando?
 
     print("Jogo encerrado!")
     break;
