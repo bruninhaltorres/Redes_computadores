@@ -10,16 +10,17 @@ PORT = 20003
 class client_thread(threading.Thread):
     def __init__(self, endereco, cliente):
         threading.Thread.__init__(self)
-        self.csocket = cliente # Recebe o socket cliente
-        print("Endereço da nova conexão: ", endereco)
+        self.csocket = cliente 
 
     def run(self):
-        print("Conexão de: ", endereco)
+        print(f"Conexão {endereco} inicializada!")
         # self.csocket.send(bytes("Hi, This is from Server..",'utf-8'))
         
+
         ativo = 's'
 
         while ativo == 's':
+            # Recebendo:
             nivel = ''
             data = cliente.recv(2048).decode()
             i = 0
@@ -32,14 +33,22 @@ class client_thread(threading.Thread):
                     dados_cliente.append(dado_linha) # adiciona no final do array
                     dado_linha = ''
                 i += 1
+
             print(dados_cliente)
+            if(len(dados_cliente) == 0):
+                print(f"Conexão {endereco} encerrada...\n")
+                break
             nivel = dados_cliente[0]
             life_jogador = int(dados_cliente[1])
             life_monstro = int(dados_cliente[2])
             ataque_especial = int(dados_cliente[3])
             cura = int(dados_cliente[4])
             comando = dados_cliente[5]
-        
+            ativo = dados_cliente[6]
+
+            forca_cura = 0
+            forca_monstro = 0
+
             if nivel == '1':
                 # Vez do jogador:
                 if comando == 'A':
@@ -48,20 +57,22 @@ class client_thread(threading.Thread):
                 elif comando == 'AE':
                     ataque_especial -= 1
                     life_monstro -= 12
-                    print(f"Vida jogador: {life_jogador}")
-                    print(f"Vida monstro: {life_monstro}")
                 elif comando == 'C':
                     cura -= 1
                     forca_cura = random.randint(3,10)
                     life_jogador += forca_cura
                 # Vez do monstro:
-                aleatorio = random.randint(1,100)
-                if aleatorio < 30:
+                aleatorio = random.randint(1,1000000)
+                if aleatorio < 100000:
                     life_jogador -= 12
+                    forca_monstro = 12
                 else:
                     ataque_monstro = random.randint(5,10)
+                    forca_monstro = ataque_monstro
                     life_jogador -= ataque_monstro
+
             if nivel == '2':
+
                 if comando == 'A':
                     ataque = random.randint(5,10)
                     life_monstro -= ataque
@@ -73,14 +84,17 @@ class client_thread(threading.Thread):
                     forca_cura = random.randint(3,10)
                     life_jogador += forca_cura
 
-                ataque_especial_monstro = random.randint(1,100)
-                if ataque_especial_monstro < 37:
+                ataque_especial_monstro = random.randint(1,1000000)
+                if ataque_especial_monstro < 300000:
                     life_jogador -= 14
+                    forca_monstro = 14
                 else:
                     ataque_monstro = random.randint(6,12)
+                    forca_monstro = ataque_monstro
                     life_jogador -= ataque_monstro
             
             if nivel == '3':
+
                 if comando == 'A':
                     ataque = random.randint(6,12)
                     life_monstro -= ataque
@@ -92,11 +106,13 @@ class client_thread(threading.Thread):
                     forca_cura = random.randint(3,10)
                     life_jogador += forca_cura
 
-                ataque_especial_monstro = random.randint(1,100)
-                if ataque_especial_monstro < 45:
+                ataque_especial_monstro = random.randint(1,1000000)
+                if ataque_especial_monstro < 450000:
                     life_jogador -= 16
+                    forca_monstro = 16
                 else:
                     ataque_monstro = random.randint(7,14)
+                    forca_monstro = ataque_monstro
                     life_jogador -= ataque_monstro
 
             if(life_jogador < 0):
@@ -104,23 +120,8 @@ class client_thread(threading.Thread):
             if(life_monstro < 0):
                 life_monstro = 0
 
-            msg = str(life_jogador) + '\n' + str(life_monstro) + '\n' + str(ataque_especial) + '\n' + str(cura)
+            msg = str(life_jogador) + '\n' + str(life_monstro) + '\n' + str(ataque_especial) + '\n' + str(cura) + '\n' + str(forca_cura) + '\n' + str(forca_monstro) + '\n'
             cliente.sendall(bytes(msg, 'UTF-8'))
-        # life_jogador = str(life_jogador)
-        # life_monstro = str(life_monstro)
-        # ataque_especial = str(ataque_especial)
-        # cura = str(cura)
-
-        # self.csocket.sendall(bytes(life_jogador, 'UTF-8'))
-        # self.csocket.sendall(bytes(life_monstro, 'UTF-8'))
-        # self.csocket.sendall(bytes(ataque_especial, 'UTF-8'))
-        # self.csocket.sendall(bytes(cura, 'UTF-8'))
-        
-            #data = self.csocket.recv(2048)
-            #ativo = data.decode()
-            # print(ativo)
-            #if ativo == 'n':
-                #break
 
 servidor = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # Bind: amarra o ip e a porta. Envia uma tupla contendo uma string(host local) e um inteiro(porta local)

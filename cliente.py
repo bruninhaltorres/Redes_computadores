@@ -22,6 +22,10 @@ while True:
     ativo = 's'
 
     nivel = input("Qual nivel você deseja jogar?\n1 - Facil\n2 - Medio\n3 - Dificil\n")
+
+    while nivel != '1' and nivel != '2' and nivel != '3':
+        nivel = input("Valor inválido. Tente novamente:\n1 - Fácil\n2 - Médio\n3 - Difícil\n")
+
     # cliente.sendall(bytes(nivel, 'UTF-8'))
 
     # cliente.sendall(bytes(ataque_especial, 'UTF-8'))
@@ -36,22 +40,23 @@ while True:
         comando = input("O que você deseja fazer? (A/AE/C/D/?)\n")
         if comando == '?':
             print("A - Ataque\nAE - Ataque Especial\nC - Cura\nD - Desistir\n? - Caso tenha dúvidas sobre os comandos.\n")
-        if comando == 'D':
+        elif comando == 'D':
             print("Que pena, você desistiu...\n")
-            # ativo = input("Quer jogar novamente?(s/n)")
-        if comando == 'AE' and ataque_especial == 0:
+            ativo = input("Quer jogar novamente?(s/n)")
+            if ativo == 's':
+                life_jogador = 100
+                life_monstro = 100
+                ataque_especial = 4
+                cura = 6
+                print("Okay, jogo reiniciado...\n")
+        elif comando == 'AE' and ataque_especial == 0:
             print("Essa opção não pode ser selecionada")
-        if comando == 'C' and cura == 0:
+        elif comando == 'C' and cura == 0:
             print("Essa opção não pode ser selecionada")
         else:
+            # Enviando:
             msg = str(nivel) + '\n' + str(life_jogador) + '\n' + str(life_monstro) + '\n' + str(ataque_especial) + '\n' + str(cura) + '\n' + str(comando) + '\n' + str(ativo) + '\n';
             cliente.sendall(bytes(msg, 'UTF-8'))
-
-            # life_jogador = str(life_jogador)
-            # cliente.sendall(bytes(life_jogador, 'UTF-8'))
-
-            # life_monstro = str(life_monstro)
-            # cliente.sendall(bytes(life_monstro, 'UTF-8'))
 
             # Recebendo:
             data = cliente.recv(2048).decode()
@@ -69,16 +74,34 @@ while True:
             life_monstro = int(dados_servidor[1])
             ataque_especial = int(dados_servidor[2])
             cura = int(dados_servidor[3])
+            forca_cura = int(dados_servidor[4])
+            forca_monstro = int(dados_servidor[5])
 
         if life_jogador <= 0:
             print("Infelizmente você perdeu :(\n")
             ativo = input("Quer jogar novamente?(s/n)")
+            if ativo == 's':
+                life_jogador = 100
+                life_monstro = 100
+                ataque_especial = 4
+                cura = 6
+                print("Okay, jogo reiniciado...\n")
         if life_monstro <= 0:
             print("Parabéns, você conseguiu :)\n")
             ativo = input("Quer jogar novamente?(s/n)")
+            if ativo == 's':
+                life_jogador = 100
+                life_monstro = 100
+                ataque_especial = 4
+                cura = 6
+                print("Okay, jogo reiniciado...\n")
         else:
-            print(f"Sua vida: {life_jogador}\n")
-            print(f"Vida do monstro: {life_monstro}\n")
+            if comando == 'C' and cura > 0:
+                print("\nCurando... +", forca_cura)
+                adicionar = forca_monstro - forca_cura
+                print("Vida curada:", life_jogador + adicionar + forca_cura)
+                print("...foi atacado")
+            print(f"\nVocê: {life_jogador} X {life_monstro} : Monstro\n")
         # cliente.sendall(bytes(ativo, 'UTF-8')) # não ta enviando?
 
     print("Jogo encerrado!")
