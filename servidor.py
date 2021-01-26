@@ -17,179 +17,108 @@ class client_thread(threading.Thread):
         print("Conexão de: ", endereco)
         # self.csocket.send(bytes("Hi, This is from Server..",'utf-8'))
         nivel = ''
-        while True:
-            data = self.csocket.recv(2048)
-            nivel = data.decode()
+        data = self.csocket.recv(2048)
+        nivel = data.decode()
 
-            life = 100
-            life_monstro = 100
-            ataque_especial = 4
-            cura = 6
-            ativo = 'sim'
-            
+        #ativo = 's'
 
-            if nivel == '1':
-                while life > 0 and life_monstro > 0:
-                    if life <= 0:
-                        mensagem = "Infelizmente você perdeu :("
-                        servidor.sendall(bytes(mensagem, 'UTF-8'))
-                        ativo = 'nao'
-                        servidor.sendall(bytes(ativo, 'UTF-8'))
-                        break
-                    if life_monstro <= 0:
-                        mensagem = "Parabéns, você conseguiu :)"
-                        servidor.sendall(bytes(mensagem, 'UTF-8'))
-                        ativo = 'nao'
-                        servidor.sendall(bytes(ativo, 'UTF-8'))
-                        break
-                    else:
-                        mensagem = "Sua vida: "
-                        servidor.sendall(bytes(mensagem, 'UTF-8'))
-                        for life_now in range(0, life):
-                            simbolo = '*'
-                            servidor.sendall(bytes(simbolo, 'UTF-8'))
+        #while ativo == 's':
 
-                        mensagem = "Vida do monstro: "
-                        servidor.sendall(bytes(mensagem, 'UTF-8'))
-                        for life_now_monstro in range(0, life_monstro):
-                            simbolo = '-'
-                            servidor.sendall(bytes(simbolo, 'UTF-8'))
+        data = self.csocket.recv(2048)
+        ataque_especial = data.decode()
+        ataque_especial = int(ataque_especial)
 
-                        data = self.csocket.recv(2048)
-                        comando = data.decode()
+        data = self.csocket.recv(2048)
+        cura = data.decode()
+        cura = int(cura)
 
-                        if comando == '?':
-                            mensagem = "A - Ataque\nAE - Ataque Especial\nC - Cura\nD - Desistir\n? - Caso tenha dúvidas sobre os comandos."
-                            servidor.sendall(bytes(mensagem, 'UTF-8'))
-                        else: 
-                            if comando == 'A':
-                                ataque = random.randint(5,10)
-                                life_monstro -= ataque
-                            elif comando == 'AE':
-                                ataque_especial -= 1
-                                life_monstro -= 12
-                            elif comando == 'C':
-                                cura -= 1
-                                forca_cura = random.randint(3,10)
-                                life += forca_cura
-                            elif comando == 'D':
-                                mensagem = "Que pena, você desistiu..."
-                                servidor.sendall(bytes(mensagem, 'UTF-8'))
-                                break
-                            aleatorio = random.randint(1,100)
-                            if aleatorio < 30:
-                                life -= 12
-                            else:
-                                ataque_monstro = random.randint(5,10)
-                                life -= ataque_monstro
+        data = self.csocket.recv(2048)
+        comando = data.decode()
 
-            if nivel == '2':
-                while life > 0 and life_monstro > 0:
-                    if life <= 0:
-                        mensagem = "Infelizmente você perdeu :("
-                        servidor.sendall(bytes(mensagem, 'UTF-8'))
-                        break
-                    if life_monstro <= 0:
-                        mensagem = "Parabéns, você conseguiu :)"
-                        servidor.sendall(bytes(mensagem, 'UTF-8'))
-                        break
-                    else:
-                        mensagem = "Sua vida: "
-                        servidor.sendall(bytes(mensagem, 'UTF-8'))
-                        for life_now in range(0, life):
-                            simbolo = '*'
-                            servidor.sendall(bytes(simbolo, 'UTF-8'))
+        data = self.csocket.recv(2048)
+        life_jogador = data.decode()
+        life_jogador = int(life_jogador)
 
-                        mensagem = "Vida do monstro: "
-                        servidor.sendall(bytes(mensagem, 'UTF-8'))
-                        for life_now_monstro in range(0, life_monstro):
-                            simbolo = '-'
-                            servidor.sendall(bytes(simbolo, 'UTF-8'))
+        data = self.csocket.recv(2048)
+        life_monstro = data.decode()
+        life_monstro = int(life_monstro)
+        
+        if nivel == '1':
+            # Vez do jogador:
+            if comando == 'A':
+                ataque = random.randint(5,10)
+                life_monstro -= ataque
+            elif comando == 'AE':
+                ataque_especial -= 1
+                life_monstro -= 12
+                print(f"Vida jogador: {life_jogador}")
+                print(f"Vida monstro: {life_monstro}")
+            elif comando == 'C':
+                cura -= 1
+                forca_cura = random.randint(3,10)
+                life_jogador += forca_cura
 
-                        data = self.csocket.recv(2048)
-                        comando = data.decode()
+            # Vez do monstro:
+            aleatorio = random.randint(1,100)
+            if aleatorio < 30:
+                life_jogador -= 12
+            else:
+                ataque_monstro = random.randint(5,10)
+                life_jogador -= ataque_monstro
 
-                        if comando == '?':
-                            mensagem = "A - Ataque\nAE - Ataque Especial\nC - Cura\nD - Desistir\n? - Caso tenha dúvidas sobre os comandos."
-                            servidor.sendall(bytes(mensagem, 'UTF-8'))
-                        else: 
-                            if comando == 'A':
-                                ataque = random.randint(5,10)
-                                life_monstro -= ataque
-                            elif comando == 'AE':
-                                ataque_especial -= 1
-                                life_monstro -= 12
-                            elif comando == 'C':
-                                cura -= 1
-                                forca_cura = random.randint(3,10)
-                                life += forca_cura
-                            elif comando == 'D':
-                                mensagem = "Que pena, você desistiu..."
-                                servidor.sendall(bytes(mensagem, 'UTF-8'))
-                                break
-                            ataque_especial_monstro = random.randint(1,100)
-                            if ataque_especial_monstro < 37:
-                                life -= 14
-                            else:
-                                ataque_monstro = random.randint(6,12)
-                                life -= ataque_monstro
-            
-            if nivel == '3':
-                while life > 0 and life_monstro > 0:
-                    if life <= 0:
-                        mensagem = "Infelizmente você perdeu :("
-                        servidor.sendall(bytes(mensagem, 'UTF-8'))
-                        break
-                    if life_monstro <= 0:
-                        mensagem = "Parabéns, você conseguiu :)"
-                        servidor.sendall(bytes(mensagem, 'UTF-8'))
-                        break
-                    else:
-                        mensagem = "Sua vida: "
-                        servidor.sendall(bytes(mensagem, 'UTF-8'))
-                        for life_now in range(0, life):
-                            simbolo = '*'
-                            servidor.sendall(bytes(simbolo, 'UTF-8'))
+        if nivel == '2':
+            if comando == 'A':
+                ataque = random.randint(5,10)
+                life_monstro -= ataque
+            elif comando == 'AE':
+                ataque_especial -= 1
+                life_monstro -= 12
+            elif comando == 'C':
+                cura -= 1
+                forca_cura = random.randint(3,10)
+                life_jogador += forca_cura
 
-                        mensagem = "Vida do monstro: "
-                        servidor.sendall(bytes(mensagem, 'UTF-8'))
-                        for life_now_monstro in range(0, life_monstro):
-                            simbolo = '-'
-                            servidor.sendall(bytes(simbolo, 'UTF-8'))
+            ataque_especial_monstro = random.randint(1,100)
+            if ataque_especial_monstro < 37:
+                life_jogador -= 14
+            else:
+                ataque_monstro = random.randint(6,12)
+                life_jogador -= ataque_monstro
+        
+        if nivel == '3':
+            if comando == 'A':
+                ataque = random.randint(6,12)
+                life_monstro -= ataque
+            elif comando == 'AE':
+                ataque_especial -= 1
+                life_monstro -= 14
+            elif comando == 'C':
+                cura -= 1
+                forca_cura = random.randint(3,10)
+                life_jogador += forca_cura
 
-                        data = self.csocket.recv(2048)
-                        comando = data.decode()
+            ataque_especial_monstro = random.randint(1,100)
+            if ataque_especial_monstro < 45:
+                life_jogador -= 16
+            else:
+                ataque_monstro = random.randint(7,14)
+                life_jogador -= ataque_monstro
 
-                        if comando == '?':
-                            mensagem = "A - Ataque\nAE - Ataque Especial\nC - Cura\nD - Desistir\n? - Caso tenha dúvidas sobre os comandos."
-                            servidor.sendall(bytes(mensagem, 'UTF-8'))
-                        else: 
-                            if comando == 'A':
-                                ataque = random.randint(6,12)
-                                life_monstro -= ataque
-                            elif comando == 'AE':
-                                ataque_especial -= 1
-                                life_monstro -= 14
-                            elif comando == 'C':
-                                cura -= 1
-                                forca_cura = random.randint(3,10)
-                                life += forca_cura
-                            elif comando == 'D':
-                                mensagem = "Que pena, você desistiu..."
-                                servidor.sendall(bytes(mensagem, 'UTF-8'))
-                                break
-                            ataque_especial_monstro = random.randint(1,100)
-                            if ataque_especial_monstro < 45:
-                                life -= 16
-                            else:
-                                ataque_monstro = random.randint(7,14)
-                                life -= ataque_monstro
-            data = self.csocket.recv(2048)
-            mensagem = data.decode()
-            if mensagem == 'n':
-                break
-                self.csocket.send(bytes(mensagem, 'UTF-8'))
-                print("Client at ", endereco, " disconnected...")
+        life_jogador = str(life_jogador)
+        life_monstro = str(life_monstro)
+        ataque_especial = str(ataque_especial)
+        cura = str(cura)
+
+        self.csocket.sendall(bytes(life_jogador, 'UTF-8'))
+        self.csocket.sendall(bytes(life_monstro, 'UTF-8'))
+        self.csocket.sendall(bytes(ataque_especial, 'UTF-8'))
+        self.csocket.sendall(bytes(cura, 'UTF-8'))
+        
+            #data = self.csocket.recv(2048)
+            #ativo = data.decode()
+            # print(ativo)
+            #if ativo == 'n':
+                #break
 
 servidor = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # Bind: amarra o ip e a porta. Envia uma tupla contendo uma string(host local) e um inteiro(porta local)
