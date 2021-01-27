@@ -4,7 +4,6 @@ __pycache__/
 *$py.class
 
 Exemplo
-servidor.py
 
 # C extensions
 *.so
